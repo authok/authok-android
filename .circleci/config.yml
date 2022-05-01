@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    environment:
+      GRADLE_OPTS: -Dkotlin.compiler.execution.strategy=in-process
+    docker:
+      - image: cimg/android:2022.03.1
+
+    steps:
+      - checkout
+
+      - run:
+          name: Run checks
+          command: ./gradlew clean test jacocoTestReport lint --continue --console=plain --max-workers=2 --no-daemon
+
+      - store_artifacts:
+          path: authok/build/reports
+          destination: reports
+
+      - store_test_results:
+          path: authok/build/test-results
+
+      - run:
+          name: Upload Coverage
+          when: on_success
+          command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1

@@ -1,0 +1,129 @@
+/*
+ * build.gradle
+ *
+ * Copyright (c) 2022 Authok (http://authok.cn)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    // id "cn.authok.gradle.oss-library.android" version "0.15.1"
+    id "org.jetbrains.dokka" version "1.4.20"
+}
+
+logger.lifecycle("Using version ${version} for ${name}")
+
+/*
+oss {
+    name 'authok-android'
+    repository 'authok-android'
+    organization 'authok'
+    description 'Android toolkit for Authok API'
+
+    developers {
+        authok {
+            displayName = 'Authok'
+            email = 'oss@authok.cn'
+        }
+        edison {
+            displayName = 'edison'
+            email = 'edison@authok.cn'
+        }
+    }
+}
+*/
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName project.version
+
+        buildConfigField "String", "LIBRARY_NAME", "\"$project.rootProject.name\""
+        buildConfigField "String", "VERSION_NAME", "\"${project.version}\""
+
+        consumerProguardFiles '../proguard/proguard-gson.pro', '../proguard/proguard-okio.pro'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        htmlReport true
+        abortOnError true
+    }
+    testOptions {
+        unitTests {
+            all {
+                maxHeapSize = "1024m"
+            }
+            includeAndroidResources = true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs += [
+                '-Xexplicit-api=strict', // or '-Xexplicit-api=warning'
+        ]
+    }
+}
+
+ext {
+    okhttpVersion = '4.9.3'
+    powermockVersion = '2.0.9'
+}
+
+// Configure javadoc jar to use dokka output
+// TODO update oss-plugin to use dokka instead of doing it here
+/*
+javadocJar {
+    dependsOn "dokkaJavadoc"
+    from "$buildDir/dokka/javadoc"
+}*/
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.browser:browser:1.3.0'
+    implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
+    testImplementation "org.powermock:powermock-module-junit4:$powermockVersion"
+    testImplementation "org.powermock:powermock-module-junit4-rule:$powermockVersion"
+    testImplementation "org.powermock:powermock-api-mockito2:$powermockVersion"
+    testImplementation 'org.mockito:mockito-core:3.7.7'
+    // Mockito-Kotlin: See https://github.com/nhaarman/mockito-kotlin/wiki/Parameter-specified-as-non-null-is-null
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttpVersion"
+    testImplementation "com.squareup.okhttp3:okhttp-tls:$okhttpVersion"
+    testImplementation 'com.jayway.awaitility:awaitility:1.7.0'
+    testImplementation 'org.robolectric:robolectric:4.6.1'
+    testImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+}

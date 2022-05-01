@@ -1,0 +1,3 @@
+rootProject.name = 'authok-android'
+include 'authok'
+include ':sample'

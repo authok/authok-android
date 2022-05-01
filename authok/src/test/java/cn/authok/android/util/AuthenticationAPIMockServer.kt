@@ -1,0 +1,160 @@
+package cn.authok.android.util
+
+import okhttp3.mockwebserver.MockResponse
+import java.nio.file.Files
+import java.nio.file.Paths
+
+internal class AuthenticationAPIMockServer : APIMockServer() {
+
+    fun willReturnSuccessfulChangePassword(): AuthenticationAPIMockServer {
+        server.enqueue(responseWithJSON("NOT REALLY A JSON", 200))
+        return this
+    }
+
+    fun willReturnSuccessfulPasswordlessStart(): AuthenticationAPIMockServer {
+        val json = """{
+          "phone+number": "+1098098098"
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    fun willReturnSuccessfulSignUp(): AuthenticationAPIMockServer {
+        val json = """{
+          "_id": "gjsmgdkjs72jljsf2dsdhh", 
+          "email": "support@authok.cn", 
+          "email_verified": false, 
+          "username": "support"
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    fun willReturnSuccessfulEmptyBody(): AuthenticationAPIMockServer {
+        server.enqueue(responseEmpty(200))
+        return this
+    }
+
+    fun willReturnSuccessfulLogin(): AuthenticationAPIMockServer {
+        val json = """{
+          "refresh_token": "$REFRESH_TOKEN",
+          "id_token": "$ID_TOKEN",
+          "access_token": "$ACCESS_TOKEN",
+          "token_type": "$BEARER",
+          "expires_in": 86000
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    fun willReturnSuccessfulLoginWithRecoveryCode(): AuthenticationAPIMockServer {
+        val json = """{
+          "refresh_token": "$REFRESH_TOKEN",
+          "id_token": "$ID_TOKEN",
+          "access_token": "$ACCESS_TOKEN",
+          "token_type": "$BEARER",
+          "expires_in": 86000,
+          "recovery_code": "654321"
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    fun willReturnInvalidRequest(): AuthenticationAPIMockServer {
+        val json = """{
+          "error": "invalid_request",
+          "error_description": "a random error"
+        }"""
+        server.enqueue(responseWithJSON(json, 400))
+        return this
+    }
+
+    fun willReturnEmptyJsonWebKeys(): AuthenticationAPIMockServer {
+        val json = """{
+          "keys": []
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    fun willReturnValidJsonWebKeys(): AuthenticationAPIMockServer {
+        try {
+            val encoded = Files.readAllBytes(Paths.get("src/test/resources/rsa_jwks.json"))
+            val json = String(encoded)
+            server.enqueue(responseWithJSON(json, 200))
+        } catch (ignored: Exception) {
+            println("File parsing error")
+        }
+        return this
+    }
+
+    fun willReturnUserInfo(): AuthenticationAPIMockServer {
+        val json = """{
+          "email": "p@p.xom",
+          "email_verified": false,
+          "picture": "https://secure.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fssl.gstatic.com%2Fs2%2Fprofiles%2Fimages%2Fsilhouette80.png",
+          "user_id": "authok|53b995f8bce68d9fc900099c",
+          "name": "p@p.xom",
+          "nickname": "p",
+          "identities": [
+            {
+              "user_id": "53b995f8bce68d9fc900099c",
+              "provider": "authok",
+              "connection": "Username-Password-Authentication",
+              "isSocial": false
+            }
+         ],
+          "created_at": "2014-07-06T18:33:49.005Z",
+          "username": "p",
+          "updated_at": "2015-09-30T19:43:48.499Z"
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    fun willReturnPlainTextUnauthorized(): AuthenticationAPIMockServer {
+        server.enqueue(responseWithPlainText("Unauthorized", 401))
+        return this
+    }
+
+    fun willReturnTokens(): AuthenticationAPIMockServer {
+        val json = """{
+          "access_token": "$ACCESS_TOKEN",
+          "refresh_token": "$REFRESH_TOKEN",
+          "id_token": "$ID_TOKEN",
+          "token_type": "Bearer",
+          "expires_in": 86000
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    fun willReturnSuccessfulMFAChallenge(): AuthenticationAPIMockServer {
+        val json = """{
+          "challenge_type":"oob",
+          "binding_method":"prompt",
+          "oob_code": "abcdefg"
+        }"""
+        server.enqueue(responseWithJSON(json, 200))
+        return this
+    }
+
+    private fun responseEmpty(statusCode: Int): MockResponse {
+        return MockResponse()
+            .setResponseCode(statusCode)
+    }
+
+    private fun responseWithPlainText(statusMessage: String, statusCode: Int): MockResponse {
+        return MockResponse()
+            .setResponseCode(statusCode)
+            .addHeader("Content-Type", "text/plain")
+            .setBody(statusMessage)
+    }
+
+    companion object {
+        const val REFRESH_TOKEN = "REFRESH_TOKEN"
+        const val ID_TOKEN = "ID_TOKEN"
+        const val ACCESS_TOKEN = "ACCESS_TOKEN"
+        private const val BEARER = "BEARER"
+    }
+}

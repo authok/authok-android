@@ -1,0 +1,13 @@
+{
+  "picture": "https://secure.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fssl.gstatic.com%2Fs2%2Fprofiles%2Fimages%2Fsilhouette80.png",
+  "name": "info@authok",
+  "nickname": "a0",
+  "user_id": "authok|1234567890",
+  "identities": [
+    {
+      "user_id": "1234567890",
+      "provider": "authok",
+      "connection": "Username-Password-Authentication"
+    }
+  ]
+}

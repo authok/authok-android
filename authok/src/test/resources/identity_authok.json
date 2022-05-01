@@ -1,0 +1,6 @@
+{
+  "user_id": "1234567890",
+  "provider": "authok",
+  "connection": "Username-Password-Authentication",
+  "isSocial": false
+}

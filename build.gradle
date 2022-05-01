@@ -1,0 +1,37 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext.kotlin_version = "1.6.20"
+    repositories {
+        google()
+        mavenCentral()
+        //noinspection JcenterRepositoryObsolete
+        jcenter() {
+            content {
+                // https://youtrack.jetbrains.com/issue/KT-44730
+                includeModule("org.jetbrains.trove4j", "trove4j")
+            }
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    group = 'cn.authok.android'
+
+    repositories {
+        google()
+        mavenCentral()
+        //noinspection JcenterRepositoryObsolete
+        jcenter() {
+            content {
+                // https://youtrack.jetbrains.com/issue/KT-44730
+                includeModule("org.jetbrains.trove4j", "trove4j")
+                includeModule("com.soywiz.korlibs.korte", "korte-jvm")
+                includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
+            }
+        }
+    }
+}

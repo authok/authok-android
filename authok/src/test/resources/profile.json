@@ -1,0 +1,21 @@
+{
+  "email": "info@authok.cn",
+  "picture": "https://secure.gravatar.com/avatar/cfacbe113a96fdfc85134534771d88b4?s=480&r=pg&d=https%3A%2F%2Fssl.gstatic.com%2Fs2%2Fprofiles%2Fimages%2Fsilhouette80.png",
+  "name": "info@authok",
+  "nickname": "a0",
+  "username": "authok",
+  "email_verified": true,
+  "clientID": "lEqU5MhUrbyQHSVWjZSTCBUFABLbJAS3",
+  "user_id": "authok|1234567890",
+  "identities": [
+    {
+      "user_id": "1234567890",
+      "provider": "authok",
+      "connection": "Username-Password-Authentication",
+      "isSocial": false
+    }
+  ],
+  "created_at": "2014-07-06T18:33:49.005Z",
+  "updated_at": "2016-06-04T20:43:53.486Z",
+  "global_client_id": "QaXhznFbjTaQbU5"
+}
