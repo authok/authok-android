@@ -25,9 +25,12 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    // id "cn.authok.gradle.oss-library.android" version "0.15.1"
     id "org.jetbrains.dokka" version "1.4.20"
+    id 'maven-publish'
+    id 'signing'
 }
+
+version = '1.0.0'
 
 logger.lifecycle("Using version ${version} for ${name}")
 
@@ -50,6 +53,69 @@ oss {
     }
 }
 */
+publishing {
+    repositories {
+        maven {
+            // Note: New non-existing packages uploaded since Feb 2021 use a different URL. See https://central.sonatype.org/pages/ossrh-guide.html
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                // Attempts to find the Sonatype credentials.
+                // Fallback values are required so the plugin can still be applied.
+                username = project.findProperty('ossrhUsername') ?: "Missing ossrhUsername"
+                password = project.findProperty('ossrhPassword') ?: "Missing ossrhPassword"
+            }
+        }
+    }
+}
+
+afterEvaluate { project ->
+    publishing.publications {
+        release(MavenPublication) {
+            from components.release
+
+            groupId = 'cn.authok'
+            artifactId = 'authok-android'
+            version = project.version
+
+            pom {
+                name = 'authok-android'
+                description = 'Android toolkit for Authok API'
+                url = "https://github.com/authok/authok-android"
+
+                licenses {
+                    license {
+                        name = 'The MIT License (MIT)'
+                        url = "https://raw.githubusercontent.com/authok/authok/master/LICENSE"
+                        distribution = 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'authok'
+                        name = 'Authok'
+                        email = 'developer@authok.cn'
+                    }
+                }
+
+                scm {
+                    url = "https://github.com/authok/authok-android"
+                    connection = "scm:git:https://github.com/authok/authok-android.git"
+                    developerConnection = "scm:git:https://github.com/authok/authok-android.git"
+                }
+            }
+        }
+    }
+
+    signing {
+        sign project.publishing.publications.release
+        '''publishing.publications.all { publication ->
+        sign publication
+
+        required { !gradle.taskGraph.allTasks.findAll { it.name ==~ /.*Sonatype.*/ }.isEmpty() }
+        }'''
+    }
+}
 
 android {
     compileSdkVersion 30
